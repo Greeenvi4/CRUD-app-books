@@ -1,13 +1,11 @@
 package com.example.crudapp;
 
 
-import org.springframework.boot.SpringApplication;                      //Импортируем класс SpringApplication, который берет все управление SB проектом на себя.Необходимо для строчки: SpringApplication.run(CrudAppApplication.class, args);
-import org.springframework.boot.autoconfigure.SpringBootApplication;    //Для аннотации SpringBootApplication
+import org.springframework.boot.SpringApplication;
+import org.springframework.boot.autoconfigure.SpringBootApplication;
 
-@SpringBootApplication              //Эта аннотация включает в себя три аннотации:
-                                    //@Configuration(говорит - здесь есть конфигурация)
-                                    //@EnableAutoConfiguration(говорит - настрой все автоматически)
-                                    //@ComponentSca(говорит - обойди весь проект и найди все компоненты (ищет: @RestController, @Service, @Repository, @Entity)).
+@SpringBootApplication
+
 public class CrudAppApplication {
 
     public static void main(String[] args) {
