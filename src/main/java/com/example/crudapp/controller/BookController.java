@@ -47,7 +47,7 @@ public class BookController {
 
     @GetMapping("/count")
     public ResponseEntity<String> countBook() {
-        return ResponseEntity.ok("Количество разных наименований книг: " + bookService.countBook());
+        return ResponseEntity.ok("Количество записей: " + bookService.countBook());
     }
 
     @GetMapping("/countall")

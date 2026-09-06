@@ -32,17 +32,4 @@ public class BookMapper {
         book.setPrice(bookCreateDTO.getPrice());
         return book;
     }
-
-    public Book toEntity(BookDTO bookDTO) {
-        if (bookDTO == null) {
-            return null;
-        }
-        Book book = new Book();
-        book.setBook_id(bookDTO.getId());
-        book.setTitle(bookDTO.getTitle());
-        book.setAuthor(bookDTO.getAuthor());
-        book.setAmount(bookDTO.getAmount());
-        book.setPrice(bookDTO.getPrice());
-        return book;
-    }
 }
