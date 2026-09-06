@@ -1,75 +1,82 @@
 package com.example.crudapp.service;
 
+import com.example.crudapp.dto.BookCreateDTO;
+import com.example.crudapp.dto.BookDTO;
+import com.example.crudapp.mapping.BookMapper;
 import com.example.crudapp.model.Book;
 import com.example.crudapp.repository.BookRepository;
 import org.springframework.stereotype.Service;
 import org.springframework.transaction.annotation.Transactional;
 
-import java.util.ArrayList;
 import java.util.List;
+import java.util.stream.Collectors;
 
 @Service
 @Transactional(readOnly = true)
 public class BookService {
 
     private final BookRepository bookRepository;
+    private final BookMapper bookMapper;
 
-    public BookService(BookRepository bookRepository) {
+    public BookService(BookRepository bookRepository, BookMapper bookMapper) {
         this.bookRepository = bookRepository;
+        this.bookMapper = bookMapper;
     }
 
-
-    public List<Book> getAllBooks() {
-        return bookRepository.findAll();
+    public List<BookDTO> getAllBooks() {
+        return bookRepository.findAll().stream()
+                .map(bookMapper::toDto)
+                .collect(Collectors.toList());
     }
 
-
-    public Book getBookById(Long book_id) {
-        return bookRepository.findById(book_id)
-                .orElseThrow(() -> new RuntimeException("Книга с ID " + book_id + " не найден"));
+    public BookDTO getBookById(Long bookId) {
+        Book book = bookRepository.findById(bookId)
+                .orElseThrow(() -> new RuntimeException("Книга с ID " + bookId + " не найдена"));
+        return bookMapper.toDto(book);
     }
 
     @Transactional
-    public Book createBook(Book book) {
-        if (book.getTitle() == null || book.getTitle().isBlank() || book.getAuthor() == null || book.getAuthor().isBlank() || book.getAmount() == null || book.getPrice() == null) {
+    public BookDTO createBook(BookCreateDTO bookCreateDTO) {
+        if (bookCreateDTO.getTitle() == null || bookCreateDTO.getTitle().isBlank() ||
+                bookCreateDTO.getAuthor() == null || bookCreateDTO.getAuthor().isBlank() ||
+                bookCreateDTO.getAmount() == null || bookCreateDTO.getPrice() == null) {
             throw new RuntimeException("Значения title, author, amount и price не могут быть null.");
         }
-        return bookRepository.save(book);
+
+        Book book = bookMapper.toEntity(bookCreateDTO);
+        Book savedBook = bookRepository.save(book);
+        return bookMapper.toDto(savedBook);
     }
 
     @Transactional
-    public Book updateBook(Long id, Book updatedBook) {
-        Book existingBook = getBookById(id);
+    public BookDTO updateBook(Long id, BookCreateDTO bookCreateDTO) {
+        Book existingBook = bookRepository.findById(id)
+                .orElseThrow(() -> new RuntimeException("Книга с ID " + id + " не найдена"));
 
-        existingBook.setTitle(updatedBook.getTitle());
-        existingBook.setAuthor(updatedBook.getAuthor());
-        existingBook.setAmount(updatedBook.getAmount());
-        existingBook.setPrice(updatedBook.getPrice());
+        existingBook.setTitle(bookCreateDTO.getTitle());
+        existingBook.setAuthor(bookCreateDTO.getAuthor());
+        existingBook.setAmount(bookCreateDTO.getAmount());
+        existingBook.setPrice(bookCreateDTO.getPrice());
 
-        return bookRepository.save(existingBook);
+        Book updatedBook = bookRepository.save(existingBook);
+        return bookMapper.toDto(updatedBook);
     }
 
     @Transactional
-    public void deleteBook(Long book_id) {
-        if (!bookRepository.existsById(book_id)) {
-            throw new RuntimeException("Пользователь с ID " + book_id + " не найден");
+    public void deleteBook(Long bookId) {
+        if (!bookRepository.existsById(bookId)) {
+            throw new RuntimeException("Книга с ID " + bookId + " не найдена");
         }
-        bookRepository.deleteById(book_id);
+        bookRepository.deleteById(bookId);
     }
 
-    //Выведем количество доступных объектов (книг) в таблице
-    public Long countBook(){
+    public Long countBook() {
         return bookRepository.count();
     }
 
-    //Выведем количество всех экземпляров книг в таблице
-    public Long countAllBooks(){
-        List<Book> bookList = new ArrayList<>();
-        bookList = getAllBooks();
-        Long totalAmount = 0L;
-        for(Book book : bookList){
-            totalAmount += book.getAmount();
-        }
-        return totalAmount;
+    public Long countAllBooks() {
+        return bookRepository.findAll().stream()
+                .mapToLong(Book::getAmount)
+                .sum();
     }
 }
