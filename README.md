@@ -16,4 +16,4 @@ CRUD-проект "Сервис управления складским учет
 Шаг 3. Запустите все необходимые сервисы, которые указаны в файле docker-compose.yml
 Для этого в командной строке выполните команду: docker-compose up -d --build
 
-Готово. Приложение запущено. Для тестирования приложения используйте Postman (http://localhost:8080/api/books) + OpenAPI (http://localhost:8080/swagger-ui.html).
+Готово. Приложение запущено. Для тестирования приложения используйте Postman (или т.п.) (http://localhost:8080/api/books) + OpenAPI (http://localhost:8080/swagger-ui.html).
